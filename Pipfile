@@ -4,6 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+langchain = "*"
+beautifulsoup4 = "*"
+tiktoken = "*"
+openai = "*"
+unstructured = "*"
+nltk = "*"
+fastapi = "*"
+jinja2 = "*"
+uvicorn = "*"
+streamlit = "*"
+streamlit-chat = "*"
+tqdm = "*"
 
 [dev-packages]
 
