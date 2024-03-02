@@ -571,11 +571,11 @@
         },
         "langsmith": {
             "hashes": [
-                "sha256:4f3d03c365c4d9eb4ed151055e2830ea73235d8c8be0841a63334f9d4fcf8b2b",
-                "sha256:cf8d371f92f1035fd98a9692edd8af9c3a60947db4a77864a9c07dec96d3b039"
+                "sha256:6cacc88e272c1233e4038be33e9e219221462887f3681d94f2319916fae31fcc",
+                "sha256:c4b0bf2ed2075f2a23a8a3ac46a804581ed1e85d85c8ad18f7d0fd2a05441c6d"
             ],
             "markers": "python_full_version >= '3.8.1' and python_version < '4.0'",
-            "version": "==0.1.12"
+            "version": "==0.1.13"
         },
         "lxml": {
             "hashes": [
