@@ -16,9 +16,11 @@ uvicorn = "*"
 streamlit = "*"
 streamlit-chat = "*"
 tqdm = "*"
+pypdf = "*"
+langchain-community = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.11"
-python_full_version = "3.11.7"
+python_version = "3.12"
+python_full_version = "3.12.2"
