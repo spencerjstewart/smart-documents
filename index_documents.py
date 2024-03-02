@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from langchain_core.vectorstores import VectorStore
 
 load_dotenv()
 from langchain_community.document_loaders import PyPDFLoader
@@ -7,7 +8,7 @@ from langchain_community.vectorstores.faiss import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-def index():
+def get_indexed_vector_store() -> VectorStore:
 
     loader = PyPDFLoader("./ocp-study-guide.pdf")
     raw_documents = loader.load()
@@ -18,5 +19,4 @@ def index():
     documents = text_splitter.split_documents(documents=raw_documents)
     print(f"Split into {len(documents)} chunks")
     embeddings = OpenAIEmbeddings()
-    indexed_vector_store = FAISS.from_documents(documents, embeddings)
-    print(indexed_vector_store)
+    return FAISS.from_documents(documents, embeddings)

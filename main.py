@@ -1,6 +1,7 @@
-from index_documents import index
-
+from index_documents import get_indexed_vector_store
+from query import run
 
 if __name__ == "__main__":
 
-    index()
+    answer = run(get_indexed_vector_store(), "What is a generic?")
+    print(answer)
