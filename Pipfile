@@ -18,6 +18,9 @@ streamlit-chat = "*"
 tqdm = "*"
 pypdf = "*"
 langchain-community = "*"
+langchain-openai = "*"
+python-dotenv = "*"
+faiss-cpu = "*"
 
 [dev-packages]
 
