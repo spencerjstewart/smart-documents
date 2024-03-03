@@ -1,8 +1,10 @@
+import tempfile
+
 import streamlit as st
 from streamlit_chat import message
 from typing_extensions import List
 
-from backend import get_indexed_vector_store, run_query
+from backend import get_indexed_vector_store, run_query, embed_documents
 
 
 def create_sources_str(sources: List[str]) -> str:
@@ -18,6 +20,21 @@ def create_sources_str(sources: List[str]) -> str:
 if __name__ == "__main__":
     st.header("Smart Documents Bot")
     prompt = st.text_input("Prompt", placeholder="Enter your prompt here...")
+
+    # Add a file uploader to allow PDF uploads
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+
+    if uploaded_file is not None:
+        # Display a message confirming the upload
+        st.write("Uploaded file:", uploaded_file.name)
+        if uploaded_file is not None:
+            with tempfile.NamedTemporaryFile(
+                delete_on_close=True, suffix=".pdf"
+            ) as tmpfile:
+                tmpfile.write(uploaded_file.getvalue())
+                file_path = tmpfile.name
+                embed_documents(file_path)
+            st.write("Successfully saved the file to the vector store.")
 
     if "user_prompt_history" not in st.session_state:
         st.session_state["user_prompt_history"] = []
