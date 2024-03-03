@@ -10,10 +10,10 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain.chains import RetrievalQA
 from langchain_core.vectorstores import VectorStore
 from langchain_openai import ChatOpenAI
-from typing_extensions import Any
+from langchain.chains import ConversationalRetrievalChain
+from typing_extensions import Any, List, Dict
 
 
 def get_indexed_vector_store() -> VectorStore:
@@ -55,12 +55,13 @@ def create_local_vector_store() -> VectorStore:
     return vector_store
 
 
-def run_query(vector_store: VectorStore, query: str) -> Any:
+def run_query(
+    vector_store: VectorStore, query: str, chat_history: List[Dict[str, Any]]
+) -> Any:
     chat = ChatOpenAI(verbose=True, temperature=0)
-    qa = RetrievalQA.from_chain_type(
+    qa = ConversationalRetrievalChain.from_llm(
         llm=chat,
-        chain_type="stuff",
         retriever=vector_store.as_retriever(),
         return_source_documents=True,
     )
-    return qa({"query": query})
+    return qa({"question": query, "chat_history": chat_history})

@@ -23,17 +23,23 @@ if __name__ == "__main__":
         st.session_state["user_prompt_history"] = []
     if "chat_answers_history" not in st.session_state:
         st.session_state["chat_answers_history"] = []
+    if "chat_history" not in st.session_state:
+        st.session_state["chat_history"] = []
 
     if prompt:
         with st.spinner("Generating response..."):
-            response = run_query(get_indexed_vector_store(), prompt)
+            response = run_query(
+                vector_store=get_indexed_vector_store(),
+                query=prompt,
+                chat_history=st.session_state["chat_history"],
+            )
             sources = [doc.metadata["source"] for doc in response["source_documents"]]
             formatted_response = (
-                f"{response['result']}\n\n {create_sources_str(sources)}"
+                f"{response['answer']}\n\n {create_sources_str(sources)}"
             )
             st.session_state["user_prompt_history"].append(prompt)
             st.session_state["chat_answers_history"].append(formatted_response)
-
+            st.session_state["chat_history"].append((prompt, response["answer"]))
     if st.session_state["chat_answers_history"]:
         for response, query in zip(
             st.session_state["chat_answers_history"],
