@@ -17,9 +17,9 @@ from typing_extensions import Any
 
 
 def get_indexed_vector_store() -> VectorStore:
-    if os.path.exists(OCP_INDEX_DIR_PATH + OCP_INDEX_FILE_NAME):
+    if os.path.exists(OCP_INDEX_DIR_PATH + OCP_INDEX_FILE_NAME + ".faiss"):
         print("Loading existing index...")
-        load_local_vector_store()
+        return load_local_vector_store()
     else:
         print(
             f"Index {OCP_INDEX_DIR_PATH + OCP_INDEX_FILE_NAME} "
@@ -30,7 +30,12 @@ def get_indexed_vector_store() -> VectorStore:
 
 
 def load_local_vector_store() -> VectorStore:
-    FAISS.load_local(folder_path=OCP_INDEX_DIR_PATH, index_name=OCP_INDEX_FILE_NAME)
+    print(f"Loading vector store {OCP_INDEX_FILE_NAME} at {OCP_INDEX_DIR_PATH}")
+    return FAISS.load_local(
+        folder_path=OCP_INDEX_DIR_PATH,
+        index_name=OCP_INDEX_FILE_NAME,
+        embeddings=OpenAIEmbeddings(),
+    )
 
 
 def create_local_vector_store() -> VectorStore:
@@ -43,11 +48,14 @@ def create_local_vector_store() -> VectorStore:
     documents = text_splitter.split_documents(documents=raw_documents)
     print(f"Split into {len(documents)} chunks")
     embeddings = OpenAIEmbeddings()
-    return FAISS.from_documents(documents, embeddings)
+    vector_store = FAISS.from_documents(documents, embeddings)
+    vector_store.save_local(
+        folder_path=OCP_INDEX_DIR_PATH, index_name=OCP_INDEX_FILE_NAME
+    )
+    return vector_store
 
 
 def run_query(vector_store: VectorStore, query: str) -> Any:
-
     chat = ChatOpenAI(verbose=True, temperature=0)
     qa = RetrievalQA.from_chain_type(
         llm=chat,
