@@ -1,7 +1,43 @@
-from index_documents import get_indexed_vector_store
-from query import run
+import streamlit as st
+from streamlit_chat import message
+from typing_extensions import List
+
+from backend import get_indexed_vector_store, run_query
+
+
+def create_sources_str(sources: List[str]) -> str:
+    if not sources:
+        return ""
+    sources.sort()
+    sources_str = "sources:\n"
+    for i, source in enumerate(sources):
+        sources_str += f"{i+1}. {source}\n"
+    return sources_str
+
 
 if __name__ == "__main__":
+    st.header("Smart Documents Bot")
+    prompt = st.text_input("Prompt", placeholder="Enter your prompt here...")
 
-    answer = run(get_indexed_vector_store(), "What is a generic?")
-    print(answer)
+    if "user_prompt_history" not in st.session_state:
+        st.session_state["user_prompt_history"] = []
+    if "chat_answers_history" not in st.session_state:
+        st.session_state["chat_answers_history"] = []
+
+    if prompt:
+        with st.spinner("Generating response..."):
+            response = run_query(get_indexed_vector_store(), prompt)
+            sources = [doc.metadata["source"] for doc in response["source_documents"]]
+            formatted_response = (
+                f"{response['result']}\n\n {create_sources_str(sources)}"
+            )
+            st.session_state["user_prompt_history"].append(prompt)
+            st.session_state["chat_answers_history"].append(formatted_response)
+
+    if st.session_state["chat_answers_history"]:
+        for response, query in zip(
+            st.session_state["chat_answers_history"],
+            st.session_state["user_prompt_history"],
+        ):
+            message(query, is_user=True)
+            message(response)
