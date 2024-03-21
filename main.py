@@ -1,19 +1,20 @@
 import tempfile
 
 import streamlit as st
+from langchain_core.documents import Document
 from streamlit_chat import message
 from typing_extensions import List
 
 from backend import run_query, parse_documents, index_documents, get_vector_store
 
 
-def create_sources_str(sources: List[str]) -> str:
+def create_sources_str(sources: List[Document]) -> str:
     if not sources:
         return ""
-    sources.sort()
-    sources_str = "sources:\n"
+    sources_str = "Sources:\n"
     for i, source in enumerate(sources):
-        sources_str += f"{i+1}. {source}\n"
+        source_info = source.metadata
+        sources_str += f"{i+1}. Page {source_info['page']}\n"
     return sources_str
 
 
@@ -63,10 +64,8 @@ if __name__ == "__main__":
                 query=prompt,
                 chat_history=st.session_state["chat_history"],
             )
-            sources = [doc.metadata["source"] for doc in response["source_documents"]]
-            formatted_response = (
-                f"{response['answer']}\n\n {create_sources_str(sources)}"
-            )
+            sources = [doc.metadata["page"] for doc in response["source_documents"]]
+            formatted_response = f"{response['answer']}\n\n{create_sources_str(response['source_documents'])}"
             st.session_state["user_prompt_history"].append(prompt)
             st.session_state["chat_answers_history"].append(formatted_response)
             st.session_state["chat_history"].append((prompt, response["answer"]))

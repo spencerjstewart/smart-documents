@@ -41,6 +41,8 @@ def parse_documents(file_path) -> List[Document]:
         chunk_size=400, chunk_overlap=50, separators=["\n\n", "\n", " ", ""]
     )
     documents = text_splitter.split_documents(documents=raw_documents)
+    for i, doc in enumerate(documents):
+        doc.metadata["page"] = raw_documents[i].metadata["page"]
     print(f"Split into {len(documents)} chunks")
     return documents
 
